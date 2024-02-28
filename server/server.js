@@ -1,22 +1,39 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const axios = require('axios');
+const sql = require('mssql');
+const PORT = 8080;
+const http = require('http');
+const ip = require('ip');
 
+const testRoutes = require('./Routes/testing');
+app.use('/api', testRoutes); 
 
-app.use(express.json());
-// app.use(cors({
-//     origin: '*',
-//     credentials: false,
-//   }));
-// Sample categories data
-const categories = ['Drink', 'Pizza',  'Pasta', 'Pastry', 'Burger', 'Coffee', 'Chicken Joy'];
+const config = {
+    user: 'sa',
+    password: 'zankojt@2024',
+    server: 'DESKTOP-6S6CLHO\\SQLEXPRESS2014',
+    database: 'restopos45',
+    options: {
+        encrypt: false, 
+        enableArithAbort: true 
+    }
+};
 
-// Endpoint to get categories
-app.get('/categories', (req, res) => {
-    console.log('Sending categories:', categories);
-    res.json(categories);
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
+  const ipAddress = ip.address(); 
+  console.log(`Server is running at http://${ipAddress}:${PORT}`);
 });
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.2.102:${PORT}`);
-});
+
+// // Start the server
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+sql.connect(config)
+  .then(() => {
+    console.log('Connected to SQL Server');
+  })
+  .catch((err) => {
+    console.error('Error connecting to SQL Server:', err);
+  });
